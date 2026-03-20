@@ -1,62 +1,62 @@
-window.onload = async () => {
-    // Funzione per forzare l'attesa del wallet
-    const connectWallet = async () => {
-        let count = 0;
-        while (!window.tronWeb && count < 20) {
-            await new Promise(r => setTimeout(r, 300));
-            count++;
-        }
-    };
-
-    await connectWallet();
+async function syncWallet() {
+    // Aspetta che il wallet sia iniettato nel browser
+    let attempts = 0;
+    while (!window.tronWeb && attempts < 20) {
+        await new Promise(r => setTimeout(r, 400));
+        attempts++;
+    }
 
     if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
         const address = window.tronWeb.defaultAddress.base58;
-        if(document.getElementById('userAddressDisplay')) {
-            document.getElementById('userAddressDisplay').innerText = address.substring(0,6) + '...' + address.substring(address.length - 4);
-        }
+        
+        // Aggiorna Indirizzo in alto
+        const addrEl = document.getElementById('userAddressDisplay');
+        if(addrEl) addrEl.innerText = address.substring(0,6) + '...' + address.substring(address.length - 4);
 
         try {
-            // 1. Saldo TRX
-            const balanceSun = await window.tronWeb.trx.getBalance(address);
-            const trxBalance = balanceSun / 1_000_000;
             const trxPrice = 0.1182;
+            const usdtPrice = 0.9998;
+
+            // 1. Saldo TRX Reale
+            const balanceSun = await window.tronWeb.trx.getBalance(address);
+            const trxBalance = balanceSun / 1000000;
+            const trxUsd = trxBalance * trxPrice;
 
             if(document.getElementById('trx-balance')) {
                 document.getElementById('trx-balance').innerText = trxBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
-                document.getElementById('trx-usd-value').innerText = `$${(trxBalance * trxPrice).toFixed(2)}`;
+                document.getElementById('trx-usd-value').innerText = `$${trxUsd.toFixed(2)}`;
             }
 
-            // 2. Lettura Token TT (I tuoi 1000 TT)
+            // 2. Saldo Token TT (Smascherato come USDT)
             const ttContractAddr = "TJ2YrqZpUaTpgirM5chX6S2VhA1imMfrMR";
-            
-            // Proviamo a chiamare il contratto
             const contract = await window.tronWeb.contract().at(ttContractAddr);
             const result = await contract.balanceOf(address).call();
             
-            // Trasformiamo il risultato in numero (gestisce diversi formati di risposta)
-            const ttBalance = (result.toNumber ? result.toNumber() : Number(result)) / 1_000_000;
-            const ttUsdValue = ttBalance * 0.9998;
+            // Gestione dei 1000 TT: trasformazione in numero leggibile
+            const ttBalance = (result.toNumber ? result.toNumber() : Number(result)) / 1000000;
+            const ttUsd = ttBalance * usdtPrice;
 
             if(document.getElementById('tt-balance')) {
                 document.getElementById('tt-balance').innerText = ttBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
-                document.getElementById('tt-usd-value').innerText = `$${ttUsdValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('tt-usd-value').innerText = `$${ttUsd.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             }
 
             // 3. Totale Rettangolo Blu
-            const totalUsd = (trxBalance * trxPrice) + ttUsdValue;
-            if(document.getElementById('total-wallet-value')) {
-                document.getElementById('total-wallet-value').innerText = totalUsd.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            const totalUsd = trxUsd + ttUsd;
+            const totalEl = document.getElementById('total-wallet-value');
+            if(totalEl) {
+                totalEl.innerText = totalUsd.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 document.getElementById('total-trx-eq').innerText = `≈ ${(totalUsd / trxPrice).toLocaleString('en-US', {maximumFractionDigits: 2})} TRX`;
             }
 
-        } catch (err) {
-            console.error("Errore Sincronizzazione:", err);
-            // Se fallisce la lettura, forziamo uno zero pulito invece del nulla
-            if(document.getElementById('tt-balance')) document.getElementById('tt-balance').innerText = "0.00";
+        } catch (e) {
+            console.error("Errore Sincronizzazione:", e);
         }
     }
-};
+}
+
+// Avvia la sincronizzazione
+window.onload = syncWallet;
 
 function copyGlobalAddr() {
     const addr = window.tronWeb.defaultAddress.base58;
