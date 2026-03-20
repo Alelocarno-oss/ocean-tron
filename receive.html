@@ -1,38 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Receive - Ocean Node</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: white; margin: 0; text-align: center; }
-        .receive-container { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        body { background: white; margin: 0; font-family: sans-serif; text-align: center; }
+        .receive-container { padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .qr-box { background: white; padding: 15px; border-radius: 20px; margin: 30px auto; width: 210px; height: 210px; border: 1px solid #EDF1F7; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; }
-        .qr-box img { width: 180px; height: 180px; }
-        .addr-box { background: #F8F9FB; padding: 15px; border-radius: 12px; font-size: 13px; word-break: break-all; margin-bottom: 20px; border: 1px solid #EDF1F7; width: 90%; }
-        .copy-btn { background:#0F51CB; color:white; width:100%; border:none; padding:18px; border-radius:15px; font-weight:bold; }
+        .qr-box img { width: 180px; height: 180px; display: block; }
+        .addr-box { background: #F8F9FB; padding: 15px; border-radius: 12px; font-size: 13px; word-break: break-all; margin-bottom: 20px; border: 1px solid #EDF1F7; width: 90%; color: #1B212D; line-height: 1.4; }
+        .copy-btn { background:#0F51CB; color:white; width:100%; border:none; padding:18px; border-radius:15px; font-weight:bold; font-size: 16px; cursor: pointer; }
+        .back-btn { position: absolute; top: 20px; left: 20px; text-decoration: none; color: black; font-size: 24px; }
     </style>
 </head>
 <body>
     <div class="receive-container">
-        <a href="index.html" style="position:absolute; top:20px; left:20px; text-decoration:none; color:black; font-size:24px;">←</a>
-        <h2 style="margin-top:40px;">Receive USDT</h2>
+        <a href="index.html" class="back-btn">←</a>
+        <h2 style="margin-top:40px; font-size: 20px;">Receive USDT</h2>
+        <p style="color: #8F9BB3; font-size: 14px; margin-top: -5px;">Mainnet - TRC20</p>
+        
         <div class="qr-box">
-            <img id="qrImage" src="">
+            <!-- API esterna QRServer: Carica come una normale immagine -->
+            <img id="qrImage" src="" alt="QR Code">
         </div>
+
         <div class="addr-box" id="displayAddr">Inizializzazione...</div>
         <button class="copy-btn" onclick="copyToClipboard()">Copy Address</button>
+        
+        <p style="margin-top:25px; font-size:12px; color:#8F9BB3; padding: 0 20px; line-height: 1.6;">
+            Invia solo USDT (TRC20) a questo indirizzo.<br>
+            L'invio di altri asset potrebbe causarne la perdita definitiva.
+        </p>
     </div>
+
     <script>
         window.onload = function() {
-            let addr = "TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y";
+            // Indirizzo di backup se TronWeb non risponde subito
+            let addr = "TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y"; 
+            
             if(window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 addr = window.tronWeb.defaultAddress.base58;
             }
+            
             document.getElementById('displayAddr').innerText = addr;
+            // Genera il QR caricando l'immagine dall'API
             document.getElementById('qrImage').src = "https://api.qrserver.com" + addr;
         };
+
         function copyToClipboard() {
             const addr = document.getElementById('displayAddr').innerText;
             const el = document.createElement('textarea');
