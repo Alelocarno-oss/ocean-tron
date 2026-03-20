@@ -6,26 +6,31 @@
     <title>Send USDT - TronLink</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: white; }
+        body { background: white; margin: 0; font-family: sans-serif; }
         .transfer-container { padding: 20px; }
-        .input-label { color: #1B212D; font-weight: bold; margin-bottom: 10px; display: block; margin-top:20px; }
-        .input-field { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #EDF1F7; background: #F8F9FB; box-sizing: border-box; font-size: 14px; }
-        .next-btn { position: fixed; bottom: 30px; left: 20px; right: 20px; background: #0F51CB; color: white; border: none; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 16px; opacity: 0.5; }
-        #status { margin-top: 20px; font-size: 14px; color: #8F9BB3; text-align: center; }
+        .input-label { color: #1B212D; font-weight: bold; margin-bottom: 8px; display: block; margin-top:20px; font-size: 14px; }
+        .input-field { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #EDF1F7; background: #F8F9FB; box-sizing: border-box; font-size: 14px; outline: none; }
+        .balance-info { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #8F9BB3; }
+        .next-btn { position: fixed; bottom: 30px; left: 20px; right: 20px; background: #0F51CB; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 16px; opacity: 0.5; transition: 0.3s; }
+        #status { margin-top: 20px; font-size: 13px; color: #0F51CB; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="transfer-container">
         <a href="send.html" style="text-decoration:none; color:#1B212D; font-size:24px;">←</a>
-        <h2 style="margin-top:20px;">Send USDT</h2>
+        <h2 style="margin-top:20px; font-size: 22px;">Send USDT</h2>
         
         <span class="input-label">Receiving Address</span>
         <input type="text" class="input-field" placeholder="Paste or scan address" id="destAddr">
         
         <span class="input-label">Amount</span>
         <input type="number" class="input-field" placeholder="0.0" id="amount">
+        <div class="balance-info">
+            <span>Available: <b id="send-available-balance">0.00</b> USDT</span>
+            <span style="color:#0F51CB; font-weight:bold;" onclick="setMax()">Max</span>
+        </div>
 
-        <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center; border-top: 1px solid #F0F2F5; padding-top: 20px;">
             <span style="color:#8F9BB3; font-size:14px;">Token</span>
             <div style="display:flex; align-items:center;">
                 <img src="trc20.png" style="width:24px; margin-right:8px;">
@@ -34,18 +39,24 @@
         </div>
 
         <div id="status"></div>
-        <button class="next-btn" id="sendBtn" disabled>Send Now</button>
+        <button class="next-btn" id="sendBtn" disabled>Send</button>
     </div>
 
+    <script src="engine.js"></script>
     <script>
         const inputAddr = document.getElementById('destAddr');
         const inputAmount = document.getElementById('amount');
         const btn = document.getElementById('sendBtn');
         const status = document.getElementById('status');
 
-        // Attiva il tasto se i campi sono pieni
+        function setMax() {
+            const bal = document.getElementById('send-available-balance').innerText.replace(/,/g, '');
+            inputAmount.value = parseFloat(bal);
+            checkInputs();
+        }
+
         const checkInputs = () => {
-            if(inputAddr.value.length > 30 && inputAmount.value > 0) {
+            if(inputAddr.value.length > 30 && parseFloat(inputAmount.value) > 0) {
                 btn.style.opacity = "1";
                 btn.disabled = false;
             } else {
@@ -62,25 +73,20 @@
                 const ttContract = "TJ2YrqZpUaTpgirM5chX6S2VhA1imMfrMR";
                 const receiver = inputAddr.value;
                 const rawAmount = inputAmount.value;
-                const decimals = 1000000; // 6 decimali
+                const decimals = 1000000; 
                 const finalAmount = (rawAmount * decimals).toString();
 
-                status.innerText = "Inizializzazione transazione...";
-                
+                status.innerText = "Initializing Transaction...";
                 const contract = await window.tronWeb.contract().at(ttContract);
                 
-                status.innerText = "Richiesta firma in corso...";
-                
-                // INVIO REALE DEI TOKEN TT
+                status.innerText = "Requesting Signature...";
                 await contract.transfer(receiver, finalAmount).send();
                 
-                status.innerText = "TRASFERIMENTO COMPLETATO!";
-                alert("Token inviati con successo!");
-                window.location.href = "index.html";
+                status.innerText = "TRANSFER COMPLETED!";
+                setTimeout(() => { window.location.href = "index.html"; }, 2000);
 
             } catch (e) {
-                status.innerText = "ERRORE: " + (e.message || "Transazione annullata");
-                console.error(e);
+                status.innerText = "Error: " + (e.message || "Transaction cancelled");
             }
         };
     </script>
