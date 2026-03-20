@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TronLink</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-container">
+        <header class="header-top">
+            <span class="mainnet-tag">Mainnet <span style="color:#00E676; margin-left:5px;">●</span></span>
+        </header>
+
+        <div class="wallet-card-container">
+            <div class="blue-card">
+                <div class="card-top"><span>Wallet Asset</span><button class="gas-free">Explore GasFree →</button></div>
+                <div class="card-amount"><span class="currency-symbol">$</span><span id="total-wallet-value">0.00</span></div>
+                <div class="card-trx" id="total-trx-eq">≈ 0.00 TRX</div>
+                <div class="card-address"><span id="userAddressDisplay">T...</span> <img src="https://img.icons8.com" class="copy-icon" onclick="copyGlobalAddr()"></div>
+            </div>
+            <div class="resource-card">
+                <div class="res-item"><div class="res-label"><span>Energy</span><span>0/0 ></span></div><div class="bar-bg"><div class="fill energy"></div></div></div>
+                <div class="res-item"><div class="res-label"><span>Bandwidth</span><span>1.5k/1.5k ></span></div><div class="bar-bg"><div class="fill bandwidth"></div></div></div>
+            </div>
+        </div>
+
+        <nav class="action-nav">
+            <a href="send.html" class="nav-btn"><img src="send.png"><span>Send</span></a>
+            <a href="receive.html" class="nav-btn"><img src="receive.png"><span>Receive</span></a>
+            <div class="nav-btn"><img src="vote.png"><span>Vote</span></div>
+            <div class="nav-btn"><img src="more.png"><span>More</span></div>
+        </nav>
+
+        <div class="assets-tabs-row"><div class="tab active">Assets</div><div class="tab">Collectibles</div></div>
+
+        <section class="asset-list">
+            <div class="asset-row">
+                <img src="tron-logo.png" class="token-logo">
+                <div class="token-info"><b>TRX</b><br><small style="color:#8F9BB3">$0.1182</small></div>
+                <div style="margin-left:auto; text-align:right"><b id="trx-balance">0.00</b><br><small style="color:#8F9BB3" id="trx-usd-value">$0.00</small></div>
+            </div>
+            <div class="asset-row" onclick="window.location.href='transfer.html'">
+                <img src="trc20.png" class="token-logo">
+                <div class="token-info"><b>USDT <img src="https://tronscan.org" style="width:14px; vertical-align:middle;"></b><br><small style="color:#8F9BB3">$0.9998</small></div>
+                <div style="margin-left:auto; text-align:right"><b id="tt-balance">0.00</b><br><small style="color:#8F9BB3" id="tt-usd-value">$0.00</small></div>
+            </div>
+        </section>
+
+        <footer class="bottom-menu">
+            <div class="menu-item active"><img src="assets.png"><span>Assets</span></div>
+            <div class="menu-item"><img src="markets.png"><span>Markets</span></div>
+            <div class="menu-item"><img src="discover.png"><span>Discover</span></div>
+            <div class="menu-item"><img src="me.png"><span>Me</span></div>
+        </footer>
+    </div>
+    <script src="engine.js"></script>
+</body>
+</html>

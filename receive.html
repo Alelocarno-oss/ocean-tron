@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Receive - TronLink</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: white; margin: 0; font-family: sans-serif; }
+        .receive-container { padding: 20px; text-align: center; height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        .qr-box { background: white; padding: 15px; border-radius: 20px; margin: 30px auto; width: 200px; height: 200px; border: 1px solid #EDF1F7; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+        .addr-box { background: #F8F9FB; padding: 15px; border-radius: 12px; font-size: 13px; word-break: break-all; color: #1B212D; margin-bottom: 20px; border: 1px solid #EDF1F7; width: 90%; }
+        .back-btn { position: absolute; top: 20px; left: 20px; text-decoration: none; color: #1B212D; font-size: 24px; }
+        .copy-btn { background:#0F51CB; color:white; width:100%; border:none; padding:18px; border-radius:15px; font-weight:bold; font-size:16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="receive-container">
+        <a href="index.html" class="back-btn">←</a>
+        <h2 style="margin-top:40px; font-size: 20px;">Receive USDT</h2>
+        <p style="color: #8F9BB3; font-size: 14px; margin-top: -5px;">Mainnet - TRC20</p>
+        
+        <div class="qr-box">
+            <!-- FIX: URL GENERATORE QR COMPLETO -->
+            <img id="qrImage" src="" alt="QR Code">
+        </div>
+
+        <div class="addr-box" id="displayAddr">TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y</div>
+        
+        <button class="copy-btn" onclick="copyToClipboard()">Copy Address</button>
+        
+        <p style="margin-top:25px; font-size:12px; color:#8F9BB3; padding: 0 20px;">Invia solo USDT (TRC20) a questo indirizzo. L'invio di altri asset potrebbe causarne la perdita definitiva.</p>
+    </div>
+
+    <script>
+        const myAddress = "TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y";
+
+        // Genera il QR automaticamente all'apertura
+        window.onload = function() {
+            const qrImg = document.getElementById('qrImage');
+            // Usiamo l'API esterna configurata correttamente con l'indirizzo
+            qrImg.src = "https://api.qrserver.com" + myAddress;
+        };
+
+        function copyToClipboard() {
+            const el = document.createElement('textarea');
+            el.value = myAddress;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("Address copied!");
+        }
+    </script>
+</body>
+</html>

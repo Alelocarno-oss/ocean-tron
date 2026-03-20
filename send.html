@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Select Asset - TronLink</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #F8F9FB; }
+        .header-send { padding: 20px; background: white; display: flex; align-items: center; border-bottom: 1px solid #EDF1F7; }
+        .search-box { margin: 15px; background: #EDF1F7; padding: 12px; border-radius: 10px; color: #8F9BB3; font-size: 14px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="header-send">
+        <a href="index.html" style="text-decoration:none; color:#1B212D; font-size:24px; margin-right:20px;">←</a>
+        <span style="font-weight:bold; font-size:18px;">Select Asset</span>
+    </div>
+    <div class="search-box">Search Token Name or ID</div>
+    
+    <div class="asset-list">
+        <!-- Selezione USDT -->
+        <div class="asset-row" onclick="window.location.href='transfer.html'">
+            <img src="trc20.png" class="token-logo">
+            <div class="token-info">
+                <span style="font-weight:bold">USDT</span><br>
+                <span style="font-size:12px; color:#8F9BB3">Balance: 10,000,000.00</span>
+            </div>
+            <div style="margin-left:auto; text-align:right; color:#8F9BB3;"> > </div>
+        </div>
+        
+        <!-- Selezione TRX -->
+        <div class="asset-row">
+            <img src="tron-logo.png" class="token-logo">
+            <div class="token-info">
+                <span style="font-weight:bold">TRX</span><br>
+                <span style="font-size:12px; color:#8F9BB3">Balance: 79.34</span>
+            </div>
+            <div style="margin-left:auto; text-align:right; color:#8F9BB3;"> > </div>
+        </div>
+    </div>
+</body>
+</html>
