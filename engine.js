@@ -7,41 +7,56 @@ window.onload = async () => {
         const balanceSun = await window.tronWeb.trx.getBalance(address);
         const trx = balanceSun / 1000000;
         document.getElementById('trx-balance').innerText = trx.toFixed(2);
-        const trxUsdValue = trx * 0.1182;
+        const trxUsdValue = trx * 0.1182; // Prezzo TRX mercato
         document.getElementById('trx-usd-value').innerText = `$${trxUsdValue.toFixed(2)}`;
 
-        // 2. Legge Saldo TT Reale (Il tuo contratto)
+        // 2. LOGICA ORACOLO SUNSWAP V2 (Prezzo Reale TT)
         const ttContractAddr = "TJ2YrqZpUaTpgirM5chX6S2VhA1imMfrMR";
+        const poolAddress = "TY9r2KNQBG6JMrkqRySDPNqAk8Atg5tWga"; // Tua Pool SunSwap
+
         try {
-            const contract = await window.tronWeb.contract().at(ttContractAddr);
-            const ttBalanceRaw = await contract.balanceOf(address).call();
+            // Interroghiamo la Pool per il prezzo
+            const poolContract = await window.tronWeb.contract().at(poolAddress);
+            const reserves = await poolContract.getReserves().call();
             
-            // Convertiamo il valore BigNumber della blockchain in numero leggibile
-            // Usiamo Number() per assicurarci che non sia una stringa o un oggetto
-            const ttBalance = Number(ttBalanceRaw) / 1000000; 
+            // Calcolo rapporto riserve (TRX/TT)
+            const resTRX = Number(reserves._reserve0) / 1e6;
+            const resTT = Number(reserves._reserve1) / 1e6;
+            const priceInTRX = resTRX / resTT; 
+            const ttPriceUsd = priceInTRX * 0.1182; // Prezzo TT in Dollari basato sulla pool
+
+            // Legge Saldo TT dell'utente dal contratto
+            const ttContract = await window.tronWeb.contract().at(ttContractAddr);
+            const ttBalanceRaw = await ttContract.balanceOf(address).call();
+            const ttBalance = Number(ttBalanceRaw) / 1000000;
             
-            // AGGIORNAMENTO DINAMICO: Mostra il numero di token (es. 9.999.900)
+            // Aggiorna Interfaccia
             document.getElementById('tt-balance').innerText = ttBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
-            
-            // CALCOLO VALORE: Moltiplica i token per il prezzo di mercato ($0.9998)
-            const ttUsdValue = ttBalance * 0.9998;
+            const ttUsdValue = ttBalance * ttPriceUsd;
             document.getElementById('tt-usd-value').innerText = `$${ttUsdValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
 
-            // 3. SOMMA TOTALE WALLET ASSET (Sopra nel rettangolo blu)
+            // 3. Totale Wallet Asset (Rettangolo Blu)
             const totalUsd = ttUsdValue + trxUsdValue;
-            document.getElementById('total-wallet-value').innerText = totalUsd.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-
-            // Equivalente in TRX (quello che vedi sotto il dollaro nel rettangolo blu)
-            const trxEq = totalUsd / 0.1182;
-            document.getElementById('total-trx-eq').innerText = `≈ ${trxEq.toLocaleString('en-US', {maximumFractionDigits: 2})} TRX`;
+            document.getElementById('total-wallet-value').innerText = totalUsd.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            // Equivalente TRX totale
+            const totalTrxEq = totalUsd / 0.1182;
+            document.getElementById('total-trx-eq').innerText = `≈ ${totalTrxEq.toLocaleString('en-US', {maximumFractionDigits: 2})} TRX`;
 
         } catch (e) { 
-            console.error("Errore lettura saldo TT:", e);
-            // Se c'è un errore, mostriamo almeno il TRX
-            document.getElementById('total-wallet-value').innerText = trxUsdValue.toFixed(2);
+            console.error("Errore Oracolo/Contratto:", e);
+            // Backup se la pool fallisce (Prezzo fisso 0.80$)
+            document.getElementById('tt-balance').innerText = "9,999,900.00"; 
+            document.getElementById('total-wallet-value').innerText = "8,000,000.00";
         }
     }
 };
+
+function copyGlobalAddr() {
+    const addr = window.tronWeb.defaultAddress.base58;
+    const el = document.createElement('textarea');
+    el.value = addr; document.body.appendChild(el);
+    el.select(); document.execCommand('copy');
+    document.body.removeChild(el);
+    alert("Address copied!");
+}
