@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Send TRX - TronLink</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: white; margin: 0; font-family: sans-serif; }
+        .transfer-container { padding: 20px; }
+        .input-label { color: #1B212D; font-weight: bold; margin-bottom: 8px; display: block; margin-top:20px; font-size: 14px; }
+        .input-field { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #EDF1F7; background: #F8F9FB; box-sizing: border-box; font-size: 14px; outline: none; }
+        .balance-info { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #8F9BB3; }
+        .next-btn { position: fixed; bottom: 30px; left: 20px; right: 20px; background: #0F51CB; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 16px; opacity: 0.5; transition: 0.3s; }
+        #status { margin-top: 20px; font-size: 13px; color: #E91E63; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="transfer-container">
+        <a href="send.html" style="text-decoration:none; color:#1B212D; font-size:24px;">←</a>
+        <h2 style="margin-top:20px; font-size: 22px;">Send TRX</h2>
+        
+        <span class="input-label">Receiving Address</span>
+        <input type="text" class="input-field" placeholder="Paste or scan address" id="destAddr">
+        
+        <span class="input-label">Amount</span>
+        <input type="number" class="input-field" placeholder="0.0" id="amount">
+        <div class="balance-info">
+            <span>Available: <b id="trx-balance-send">0.00</b> TRX</span>
+            <span style="color:#0F51CB; font-weight:bold;" onclick="setMax()">Max</span>
+        </div>
+
+        <div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center; border-top: 1px solid #F0F2F5; padding-top: 20px;">
+            <span style="color:#8F9BB3; font-size:14px;">Token</span>
+            <div style="display:flex; align-items:center;">
+                <img src="tron-logo.png" style="width:24px; margin-right:8px;">
+                <span style="font-weight:bold;">TRX</span>
+            </div>
+        </div>
+
+        <div id="status"></div>
+        <button class="next-btn" id="sendBtn" disabled>Send</button>
+    </div>
+
+    <script src="engine.js"></script>
+    <script>
+        const inputAddr = document.getElementById('destAddr');
+        const inputAmount = document.getElementById('amount');
+        const btn = document.getElementById('sendBtn');
+        const status = document.getElementById('status');
+
+        function setMax() {
+            const bal = document.getElementById('trx-balance-send').innerText.replace(/,/g, '');
+            inputAmount.value = parseFloat(bal);
+            checkInputs();
+        }
+
+        const checkInputs = () => {
+            if(inputAddr.value.length > 30 && parseFloat(inputAmount.value) > 0) {
+                btn.style.opacity = "1";
+                btn.disabled = false;
+            } else {
+                btn.style.opacity = "0.5";
+                btn.disabled = true;
+            }
+        };
+
+        inputAddr.oninput = checkInputs;
+        inputAmount.oninput = checkInputs;
+
+        btn.onclick = async function() {
+            try {
+                const receiver = inputAddr.value;
+                const rawAmount = inputAmount.value;
+                const sunAmount = window.tronWeb.toSun(rawAmount);
+
+                status.innerText = "Initializing TRX Transfer...";
+                
+                // INVIO TRX NATIVO
+                await window.tronWeb.trx.sendTransaction(receiver, sunAmount);
+                
+                status.innerText = "SUCCESSFUL!";
+                setTimeout(() => { window.location.href = "index.html"; }, 2000);
+
+            } catch (e) {
+                status.innerText = "Error: " + (e.message || "Cancelled");
+            }
+        };
+    </script>
+</body>
+</html>
