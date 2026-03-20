@@ -6,38 +6,32 @@
     <title>Receive - Ocean Node</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: white; margin: 0; font-family: sans-serif; }
-        .receive-container { padding: 20px; text-align: center; height: 100vh; display: flex; flex-direction: column; align-items: center; }
-        .qr-box { background: white; padding: 15px; border-radius: 20px; margin: 30px auto; width: 210px; height: 210px; border: 1px solid #EDF1F7; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .qr-box img { width: 180px; height: 180px; display: block; }
-        .addr-box { background: #F8F9FB; padding: 15px; border-radius: 12px; font-size: 13px; word-break: break-all; color: #1B212D; margin-bottom: 20px; border: 1px solid #EDF1F7; width: 90%; line-height: 1.4; }
-        .back-btn { position: absolute; top: 20px; left: 20px; text-decoration: none; color: #1B212D; font-size: 24px; }
-        .copy-btn { background:#0F51CB; color:white; width:100%; border:none; padding:18px; border-radius:15px; font-weight:bold; font-size: 16px; cursor: pointer; }
+        body { background: white; margin: 0; text-align: center; }
+        .receive-container { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .qr-box { background: white; padding: 15px; border-radius: 20px; margin: 30px auto; width: 210px; height: 210px; border: 1px solid #EDF1F7; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; }
+        .qr-box img { width: 180px; height: 180px; }
+        .addr-box { background: #F8F9FB; padding: 15px; border-radius: 12px; font-size: 13px; word-break: break-all; margin-bottom: 20px; border: 1px solid #EDF1F7; width: 90%; }
+        .copy-btn { background:#0F51CB; color:white; width:100%; border:none; padding:18px; border-radius:15px; font-weight:bold; }
     </style>
 </head>
 <body>
     <div class="receive-container">
-        <a href="index.html" class="back-btn">←</a>
-        <h2 style="margin-top:40px; font-size: 20px;">Receive USDT</h2>
-        <p style="color: #8F9BB3; font-size: 14px; margin-top: -5px;">Mainnet - TRC20</p>
+        <a href="index.html" style="position:absolute; top:20px; left:20px; text-decoration:none; color:black; font-size:24px;">←</a>
+        <h2 style="margin-top:40px;">Receive USDT</h2>
         <div class="qr-box">
-            <img id="qrImage" src="" alt="QR Code">
+            <img id="qrImage" src="">
         </div>
-        <div class="addr-box" id="displayAddr">In attesa del wallet...</div>
+        <div class="addr-box" id="displayAddr">Inizializzazione...</div>
         <button class="copy-btn" onclick="copyToClipboard()">Copy Address</button>
     </div>
     <script>
-        function generateQR() {
-            let addr = "TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y"; // Backup
+        window.onload = function() {
+            let addr = "TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y";
             if(window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 addr = window.tronWeb.defaultAddress.base58;
             }
             document.getElementById('displayAddr').innerText = addr;
-            // Usiamo un servizio QR alternativo che non viene mai bloccato
-            document.getElementById('qrImage').src = "https://quickchart.io" + addr + "&size=200";
-        }
-        window.onload = () => {
-            setTimeout(generateQR, 1000); // Diamo tempo al wallet di svegliarsi
+            document.getElementById('qrImage').src = "https://api.qrserver.com" + addr;
         };
         function copyToClipboard() {
             const addr = document.getElementById('displayAddr').innerText;
