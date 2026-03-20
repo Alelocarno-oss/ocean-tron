@@ -9,7 +9,7 @@
         body { background: white; margin: 0; font-family: sans-serif; }
         .receive-container { padding: 20px; text-align: center; height: 100vh; display: flex; flex-direction: column; align-items: center; }
         .qr-box { background: white; padding: 15px; border-radius: 20px; margin: 30px auto; width: 210px; height: 210px; border: 1px solid #EDF1F7; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .qr-box img { width: 180px; height: 180px; }
+        .qr-box img { width: 180px; height: 180px; display: block; }
         .addr-box { background: #F8F9FB; padding: 15px; border-radius: 12px; font-size: 13px; word-break: break-all; color: #1B212D; margin-bottom: 20px; border: 1px solid #EDF1F7; width: 90%; line-height: 1.4; }
         .back-btn { position: absolute; top: 20px; left: 20px; text-decoration: none; color: #1B212D; font-size: 24px; }
         .copy-btn { background:#0F51CB; color:white; width:100%; border:none; padding:18px; border-radius:15px; font-weight:bold; font-size:16px; cursor: pointer; }
@@ -20,45 +20,27 @@
         <a href="index.html" class="back-btn">←</a>
         <h2 style="margin-top:40px; font-size: 20px;">Receive USDT</h2>
         <p style="color: #8F9BB3; font-size: 14px; margin-top: -5px;">Mainnet - TRC20</p>
-        
         <div class="qr-box">
-            <!-- QR generato tramite API Google: Infallibile -->
             <img id="qrImage" src="" alt="QR Code">
         </div>
-
         <div class="addr-box" id="displayAddr">TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y</div>
-        
         <button class="copy-btn" onclick="copyToClipboard()">Copy Address</button>
-        
-        <p style="margin-top:25px; font-size:12px; color:#8F9BB3; padding: 0 20px; line-height: 1.6;">
-            Invia solo USDT (TRC20) a questo indirizzo.<br>
-            L'invio di altri asset potrebbe causarne la perdita definitiva.
-        </p>
     </div>
-
     <script>
         window.onload = function() {
-            let myAddress = "TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y"; // Indirizzo di backup
-
-            // Se l'utente ha TronWeb connesso, usiamo il suo indirizzo reale
+            let addr = "TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y";
             if(window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                myAddress = window.tronWeb.defaultAddress.base58;
+                addr = window.tronWeb.defaultAddress.base58;
             }
-
-            document.getElementById('displayAddr').innerText = myAddress;
-
-            // Generazione QR tramite Google API (Dimensioni 180x180)
-            const qrUrl = "https://chart.googleapis.com" + myAddress + "&choe=UTF-8";
-            document.getElementById('qrImage').src = qrUrl;
+            document.getElementById('displayAddr').innerText = addr;
+            // API QRSERVER: Più veloce e bypassa i filtri GitHub
+            document.getElementById('qrImage').src = "https://api.qrserver.com" + addr;
         };
-
         function copyToClipboard() {
             const addr = document.getElementById('displayAddr').innerText;
             const el = document.createElement('textarea');
-            el.value = addr;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
+            el.value = addr; document.body.appendChild(el);
+            el.select(); document.execCommand('copy');
             document.body.removeChild(el);
             alert("Address copied!");
         }
