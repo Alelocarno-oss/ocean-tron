@@ -13,13 +13,13 @@
             width: 200px; height: 200px; border: 1px solid #F0F2F5; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; 
         }
-        /* QR FISSO COME IMMAGINE */
-        .qr-container img { width: 180px; height: 180px; display: block; }
+        /* PUNTA AL TUO FILE CARICATO: qrcode.png */
+        .qr-container img { width: 180px; height: 180px; display: block; object-fit: contain; }
         .address-display { 
             background: #F7F8FA; padding: 15px; border-radius: 10px; font-size: 13px; 
             word-break: break-all; margin: 20px; color: #121212; border: 1px solid #EDF1F7;
         }
-        .copy-button { background: #4B7BFF; color: white; border: none; width: 90%; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; }
+        .copy-button { background: #4B7BFF; color: white; border: none; width: 90%; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -29,8 +29,8 @@
     </div>
 
     <div class="qr-container">
-        <!-- QR FISSO: NON PUÒ FALLIRE -->
-        <img src="https://api.qrserver.com" alt="QR Code">
+        <!-- L'IMMAGINE CARICATA DA TE IN FORMATO PNG -->
+        <img src="qrcode.png" alt="QR Code">
     </div>
 
     <div class="address-display" id="displayAddr">TVi3MehBatfYSUutm4fPeR6y5bqnQjWEYe</div>
@@ -39,6 +39,7 @@
 
     <script>
         window.onload = function() {
+            // Se TronWeb è attivo nel browser del wallet, mostra l'indirizzo reale connesso
             if(window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 document.getElementById('displayAddr').innerText = window.tronWeb.defaultAddress.base58;
             }
