@@ -1,48 +1,29 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Send - TronLink</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Select Asset</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .send-header { padding: 15px; display: flex; align-items: center; background: white; border-bottom: 1px solid #F0F2F5; }
-        .back-link { text-decoration: none; color: #1B212D; font-size: 20px; margin-right: 20px; }
-        .search-box { margin: 15px; background: #F4F6F9; padding: 10px 15px; border-radius: 10px; color: #8F9BB3; font-size: 14px; }
-        .asset-select-row { display: flex; align-items: center; padding: 18px 20px; background: white; border-bottom: 1px solid #F0F2F5; cursor: pointer; }
-        .asset-select-row:active { background: #F8F9FB; }
-    </style>
 </head>
-<body>
-    <div class="send-header">
-        <a href="index.html" class="back-link">←</a>
-        <b style="font-size: 18px;">Select Asset</b>
+<body style="background:white;">
+    <div style="padding:20px; border-bottom:1px solid #F0F2F5;">
+        <a href="index.html" style="text-decoration:none; color:black; font-size:24px;">←</a>
+        <b style="margin-left:20px; font-size:18px;">Select Asset</b>
     </div>
-
-    <div class="search-box">Token Name / Contract Address</div>
-
-    <div class="asset-list">
-        <!-- SELEZIONE TRX -->
-        <div class="asset-select-row" onclick="window.location.href='transfer_trx.html'">
-            <img src="tron-logo.png" class="token-logo">
-            <div class="token-info"><b>TRX</b><br><small>$0.1182</small></div>
-            <div style="margin-left:auto; text-align:right">
-                <b id="trx-balance-send">0.00</b><br>
-                <small id="trx-usd-send">$0.00</small>
-            </div>
+    <div style="margin:15px; background:#F4F6F9; padding:12px; border-radius:10px; color:#8F9BB3; font-size:14px;">Token Name / Contract Address</div>
+    
+    <div style="padding:0 20px;">
+        <div class="asset-row" onclick="window.location.href='transfer_trx.html'">
+            <img src="tron-logo.png" class="asset-logo">
+            <div class="token-info"><b>TRX</b><br><span>$0.1182</span></div>
+            <div style="margin-left:auto; text-align:right"><b id="trx-bal-send">0.00</b></div>
         </div>
-
-        <!-- SELEZIONE USDT (TT) -->
-        <div class="asset-select-row" onclick="window.location.href='transfer.html'">
-            <img src="trc20.png" class="token-logo">
-            <div class="token-info"><b>USDT <img src="https://tronscan.org" style="width:14px;"></b><br><small>$0.9998</small></div>
-            <div style="margin-left:auto; text-align:right">
-                <b id="tt-balance-send">0.00</b><br>
-                <small id="tt-usd-send">$0.00</small>
-            </div>
+        <div class="asset-row" onclick="window.location.href='transfer.html'">
+            <img src="trc20.png" class="asset-logo">
+            <div class="token-info"><b>USDT</b><br><span>$0.9998</span></div>
+            <div style="margin-left:auto; text-align:right"><b id="usdt-bal-send">0.00</b></div>
         </div>
     </div>
-
     <script src="engine.js"></script>
 </body>
 </html>
