@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Receive USDT</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Receive</title>
     <link rel="stylesheet" href="style.css">
     <style>
         body { background: white; margin: 0; font-family: -apple-system, sans-serif; text-align: center; }
-        .receive-header { padding: 20px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid #F0F2F5; }
+        .receive-header { padding: 25px 20px 10px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid #F0F2F5; }
         .back-btn { position: absolute; left: 20px; text-decoration: none; color: #121212; font-size: 24px; }
         .qr-container { 
             background: white; padding: 20px; border-radius: 20px; margin: 40px auto 20px; 
             width: 200px; height: 200px; border: 1px solid #F0F2F5; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; 
         }
+        /* QR FISSO COME IMMAGINE */
         .qr-container img { width: 180px; height: 180px; display: block; }
         .address-display { 
             background: #F7F8FA; padding: 15px; border-radius: 10px; font-size: 13px; 
             word-break: break-all; margin: 20px; color: #121212; border: 1px solid #EDF1F7;
         }
-        .copy-button { 
-            background: #4B7BFF; color: white; border: none; width: 90%; 
-            padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; 
-        }
+        .copy-button { background: #4B7BFF; color: white; border: none; width: 90%; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -32,8 +29,8 @@
     </div>
 
     <div class="qr-container">
-        <!-- METODO INFALLIBILE: L'immagine viene generata via URL -->
-        <img id="qrImg" src="https://api.qrserver.com" alt="QR">
+        <!-- QR FISSO: NON PUÒ FALLIRE -->
+        <img src="https://api.qrserver.com" alt="QR Code">
     </div>
 
     <div class="address-display" id="displayAddr">TVi3MehBatfYSUutm4fPeR6y5bqnQjWEYe</div>
@@ -41,15 +38,11 @@
     <button class="copy-button" onclick="copyToClipboard()">Copy Address</button>
 
     <script>
-        // Se TronWeb è presente, aggiorniamo l'immagine e il testo al volo
         window.onload = function() {
             if(window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                const addr = window.tronWeb.defaultAddress.base58;
-                document.getElementById('displayAddr').innerText = addr;
-                document.getElementById('qrImg').src = "https://api.qrserver.com" + addr;
+                document.getElementById('displayAddr').innerText = window.tronWeb.defaultAddress.base58;
             }
         };
-
         function copyToClipboard() {
             const addr = document.getElementById('displayAddr').innerText;
             const el = document.createElement('textarea');
