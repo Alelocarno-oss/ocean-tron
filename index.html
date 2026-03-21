@@ -2,47 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wallet Asset</title>
+    <title>Wallet</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="header">
-        <div class="wallet-name">wallet Mac ⇌</div>
+        <div class="wallet-name">Wallet ⇌</div>
         <div class="network-tag">Mainnet</div>
     </div>
 
     <div class="card-blue">
         <div class="card-header">
-            <span>🔲 Wallet Asset 👁️</span>
+            <span>Wallet Asset</span>
             <button class="gas-free-btn">Use GasFree Wallet →</button>
         </div>
         <div class="balance-main">$ <span id="total-usd">0.00</span></div>
-        <div class="balance-trx">≈ <span id="total-trx">0.00</span> TRX</div>
-        <div class="address-bar" id="userAddress">T... <img src="copy.png" style="width:10px; margin-left:5px;"></div>
+        <div class="balance-trx" id="total-trx">≈ 0.00 TRX</div>
+        <div class="address-bar" id="userAddress" onclick="copyGlobalAddr()">T...</div>
     </div>
 
     <div class="resources">
-        <div style="width:45%">Energy <span style="float:right">0 / 0 ></span></div>
-        <div style="width:45%">Bandwidth <span style="float:right">600 / 600 ></span></div>
+        <div style="width:48%">Energy <span style="float:right">0 / 0 ></span></div>
+        <div style="width:48%">Bandwidth <span style="float:right">600 / 600 ></span></div>
     </div>
 
     <div class="action-bar">
-        <a href="send.html" class="action-item"><div class="action-icon"><img src="send_b.png"></div>Send</a>
-        <a href="receive.html" class="action-item"><div class="action-icon"><img src="receive_b.png"></div>Receive</a>
-        <div class="action-item"><div class="action-icon"><img src="vote_b.png"></div>Vote</div>
-        <div class="action-item"><div class="action-icon"><img src="more_b.png"></div>More</div>
+        <a href="send.html" class="action-item"><div class="action-icon"><img src="send.png"></div>Send</a>
+        <a href="receive.html" class="action-item"><div class="action-icon"><img src="receive.png"></div>Receive</a>
     </div>
 
     <div class="asset-section">
         <div class="asset-row">
             <img src="tron-logo.png" class="asset-logo">
-            <div class="asset-info"><b>TRX</b><br><span>$0.1182</span></div>
-            <div style="margin-left:auto; text-align:right"><b id="trx-bal">0.00</b><br><span id="trx-val">$0.00</span></div>
+            <div class="token-info"><b>TRX</b><br><span>$0.1182</span></div>
+            <div style="margin-left:auto; text-align:right"><b id="trx-bal">0.00</b><br><span id="trx-val" style="color:#8F9BB3; font-size:12px;">$0.00</span></div>
         </div>
         <div class="asset-row" onclick="window.location.href='transfer.html'">
             <img src="trc20.png" class="asset-logo">
-            <div class="asset-info"><b>USDT</b><br><span>$0.9998</span></div>
-            <div style="margin-left:auto; text-align:right"><b id="usdt-bal">0.00</b><br><span id="usdt-val">$0.00</span></div>
+            <div class="token-info"><b>USDT <img src="https://tronscan.org" style="width:14px;"></b><br><span>$0.9998</span></div>
+            <div style="margin-left:auto; text-align:right"><b id="usdt-bal">0.00</b><br><span id="usdt-val" style="color:#8F9BB3; font-size:12px;">$0.00</span></div>
         </div>
     </div>
     <script src="engine.js"></script>
