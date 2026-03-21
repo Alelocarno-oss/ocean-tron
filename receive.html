@@ -1,61 +1,33 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Receive - Ocean Node</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Receive</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        body { background: white; margin: 0; font-family: sans-serif; text-align: center; }
-        .receive-container { padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .qr-box { background: white; padding: 15px; border-radius: 20px; margin: 30px auto; width: 210px; height: 210px; border: 1px solid #EDF1F7; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; }
-        .qr-box img { width: 180px; height: 180px; display: block; }
-        .addr-box { background: #F8F9FB; padding: 15px; border-radius: 12px; font-size: 13px; word-break: break-all; margin-bottom: 20px; border: 1px solid #EDF1F7; width: 90%; color: #1B212D; line-height: 1.4; }
-        .copy-btn { background:#0F51CB; color:white; width:100%; border:none; padding:18px; border-radius:15px; font-weight:bold; font-size: 16px; cursor: pointer; }
-        .back-btn { position: absolute; top: 20px; left: 20px; text-decoration: none; color: black; font-size: 24px; }
-    </style>
 </head>
-<body>
-    <div class="receive-container">
-        <a href="index.html" class="back-btn">←</a>
-        <h2 style="margin-top:40px; font-size: 20px;">Receive USDT</h2>
-        <p style="color: #8F9BB3; font-size: 14px; margin-top: -5px;">Mainnet - TRC20</p>
-        
-        <div class="qr-box">
-            <!-- API esterna QRServer: Carica come una normale immagine -->
-            <img id="qrImage" src="" alt="QR Code">
-        </div>
-
-        <div class="addr-box" id="displayAddr">Inizializzazione...</div>
-        <button class="copy-btn" onclick="copyToClipboard()">Copy Address</button>
-        
-        <p style="margin-top:25px; font-size:12px; color:#8F9BB3; padding: 0 20px; line-height: 1.6;">
-            Invia solo USDT (TRC20) a questo indirizzo.<br>
-            L'invio di altri asset potrebbe causarne la perdita definitiva.
-        </p>
+<body style="background:white; text-align:center; padding:20px;">
+    <a href="index.html" style="position:fixed; top:20px; left:20px; text-decoration:none; color:black; font-size:24px;">←</a>
+    <h2 style="margin-top:50px; font-size:20px;">Receive USDT</h2>
+    <div style="margin: 30px auto; width:210px; height:210px; border:1px solid #eee; padding:10px; border-radius:15px; display:flex; align-items:center; justify-content:center;">
+        <img id="qrImage" src="" style="width:100%; display:block;">
     </div>
+    <div id="displayAddr" style="background:#f4f4f4; padding:15px; border-radius:10px; font-size:12px; word-break:break-all; margin:20px; color:#121212;">Caricamento...</div>
+    <button onclick="copyAddr()" style="background:#4B7BFF; color:white; border:none; width:90%; padding:15px; border-radius:10px; font-weight:bold; font-size:16px;">Copy Address</button>
 
     <script>
         window.onload = function() {
-            // Indirizzo di backup se TronWeb non risponde subito
-            let addr = "TB1tvraWKZWZgjPz5GeQMMUTmyZhyR748Y"; 
-            
-            if(window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                addr = window.tronWeb.defaultAddress.base58;
-            }
-            
-            document.getElementById('displayAddr').innerText = addr;
-            // Genera il QR caricando l'immagine dall'API
-            document.getElementById('qrImage').src = "https://api.qrserver.com" + addr;
+            setTimeout(() => {
+                const addr = (window.tronWeb && window.tronWeb.defaultAddress.base58) ? window.tronWeb.defaultAddress.base58 : "Connetti Wallet";
+                document.getElementById('displayAddr').innerText = addr;
+                if(addr !== "Connetti Wallet") {
+                    document.getElementById('qrImage').src = "https://api.qrserver.com" + addr;
+                }
+            }, 1000);
         };
-
-        function copyToClipboard() {
-            const addr = document.getElementById('displayAddr').innerText;
-            const el = document.createElement('textarea');
-            el.value = addr; document.body.appendChild(el);
-            el.select(); document.execCommand('copy');
-            document.body.removeChild(el);
-            alert("Address copied!");
+        function copyAddr() {
+            const t = document.createElement('textarea'); t.value = document.getElementById('displayAddr').innerText;
+            document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+            alert("Copied!");
         }
     </script>
 </body>
