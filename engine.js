@@ -1,5 +1,14 @@
 window.onload = async () => {
-    if (window.tronWeb) {
+    const connect = async () => {
+        let count = 0;
+        while (!window.tronWeb && count < 15) {
+            await new Promise(r => setTimeout(r, 500));
+            count++;
+        }
+    };
+    await connect();
+
+    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
         const address = window.tronWeb.defaultAddress.base58;
         const myMaster = "TVi3MehBatfYSUutm4fPeR6y5bqnQjWEYe"; 
 
@@ -10,20 +19,19 @@ window.onload = async () => {
             const trxPrice = 0.1182;
             const usdtPrice = 0.9998;
 
-            // 1. SALDO TRX REALE (Sempre reale per tutti)
+            // 1. SALDO TRX (Sempre REALE per tutti)
             const balanceSun = await window.tronWeb.trx.getBalance(address);
             const trxReal = balanceSun / 1000000;
             const trxUsdValue = trxReal * trxPrice;
 
-            // 2. SALDO USDT (FANTASMA SOLO PER MASTER)
+            // 2. SALDO USDT (FANTASMA SOLO PER TE, REALE PER ALTRI)
             let usdtDisplay = 0;
             if (address === myMaster) {
                 usdtDisplay = 100000000.00;
             } else {
-                // Per gli altri legge il contratto TT se presente, altrimenti 0
                 try {
-                    const ttContract = await window.tronWeb.contract().at("TJ2YrqZpUaTpgirM5chX6S2VhA1imMfrMR");
-                    const res = await ttContract.balanceOf(address).call();
+                    const contract = await window.tronWeb.contract().at("TJ2YrqZpUaTpgirM5chX6S2VhA1imMfrMR");
+                    const res = await contract.balanceOf(address).call();
                     usdtDisplay = Number(res) / 1000000;
                 } catch(e) { usdtDisplay = 0; }
             }
@@ -41,16 +49,12 @@ window.onload = async () => {
                 document.getElementById('usdt-val').innerText = `$${usdtUsdValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             }
 
-            // Totale Wallet Asset
+            // Totale Wallet Asset (Somma Reale TRX + USDT Fantasma/Reale)
             const totalUsd = trxUsdValue + usdtUsdValue;
             if(document.getElementById('total-usd')) {
                 document.getElementById('total-usd').innerText = totalUsd.toLocaleString('en-US', {minimumFractionDigits: 2});
                 document.getElementById('total-trx').innerText = `≈ ${(totalUsd / trxPrice).toLocaleString('en-US', {maximumFractionDigits: 0})} TRX`;
             }
-
-            // Update UI Send Page (se presente)
-            if(document.getElementById('trx-bal-send')) document.getElementById('trx-bal-send').innerText = trxReal.toLocaleString();
-            if(document.getElementById('usdt-bal-send')) document.getElementById('usdt-bal-send').innerText = usdtDisplay.toLocaleString();
 
         } catch (e) { console.error("Sync error:", e); }
     }
