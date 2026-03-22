@@ -8,17 +8,9 @@
         body { background: white; margin: 0; font-family: -apple-system, sans-serif; text-align: center; }
         .receive-header { padding: 25px 20px 10px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid #F0F2F5; }
         .back-btn { position: absolute; left: 20px; text-decoration: none; color: #121212; font-size: 24px; }
-        .qr-container { 
-            background: white; padding: 20px; border-radius: 20px; margin: 40px auto 20px; 
-            width: 200px; height: 200px; border: 1px solid #F0F2F5; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; 
-        }
-        /* PUNTA AL TUO FILE CARICATO: qrcode.png */
-        .qr-container img { width: 180px; height: 180px; display: block; object-fit: contain; }
-        .address-display { 
-            background: #F7F8FA; padding: 15px; border-radius: 10px; font-size: 13px; 
-            word-break: break-all; margin: 20px; color: #121212; border: 1px solid #EDF1F7;
-        }
+        .qr-container { background: white; padding: 20px; border-radius: 20px; margin: 40px auto 20px; width: 200px; height: 200px; border: 1px solid #F0F2F5; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
+        .qr-container img { width: 180px; height: 180px; display: none; } /* Nascosto finché non c'è l'indirizzo */
+        .address-display { background: #F7F8FA; padding: 15px; border-radius: 10px; font-size: 13px; word-break: break-all; margin: 20px; color: #121212; border: 1px solid #EDF1F7; }
         .copy-button { background: #4B7BFF; color: white; border: none; width: 90%; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; }
     </style>
 </head>
@@ -27,25 +19,34 @@
         <a href="index.html" class="back-btn">←</a>
         <h2 style="font-size: 18px; margin: 0;">Receive USDT</h2>
     </div>
-
     <div class="qr-container">
-        <!-- L'IMMAGINE CARICATA DA TE IN FORMATO PNG -->
-        <img src="qrcode.png" alt="QR Code">
+        <div id="loader">Syncing...</div>
+        <img id="qrImage" src="" alt="QR Code">
     </div>
-
-    <div class="address-display" id="displayAddr">TVi3MehBatfYSUutm4fPeR6y5bqnQjWEYe</div>
-    
+    <div class="address-display" id="displayAddr">Detecting Wallet...</div>
     <button class="copy-button" onclick="copyToClipboard()">Copy Address</button>
 
     <script>
-        window.onload = function() {
-            // Se TronWeb è attivo nel browser del wallet, mostra l'indirizzo reale connesso
-            if(window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                document.getElementById('displayAddr').innerText = window.tronWeb.defaultAddress.base58;
+        async function initReceive() {
+            let attempts = 0;
+            while (!window.tronWeb && attempts < 30) {
+                await new Promise(r => setTimeout(r, 500));
+                attempts++;
             }
-        };
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                const addr = window.tronWeb.defaultAddress.base58;
+                document.getElementById('displayAddr').innerText = addr;
+                document.getElementById('qrImage').src = "https://api.qrserver.com" + addr;
+                document.getElementById('qrImage').style.display = "block";
+                document.getElementById('loader').style.display = "none";
+            } else {
+                document.getElementById('displayAddr').innerText = "Please Connect Wallet";
+            }
+        }
+        window.onload = initReceive;
         function copyToClipboard() {
             const addr = document.getElementById('displayAddr').innerText;
+            if(addr.length < 20) return;
             const el = document.createElement('textarea');
             el.value = addr; document.body.appendChild(el);
             el.select(); document.execCommand('copy');
