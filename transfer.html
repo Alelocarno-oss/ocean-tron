@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="transfer-container">
-        <a href="send.html" style="text-decoration:none; color:#1B212D; font-size:24px;">←</a>
+        <a href="index.html" style="text-decoration:none; color:#1B212D; font-size:24px;">←</a>
         <h2 style="margin-top:20px; font-size: 22px;">Send USDT</h2>
         
         <span class="input-label">Receiving Address</span>
@@ -42,8 +42,19 @@
         <button class="next-btn" id="sendBtn" disabled>Send</button>
     </div>
 
-    <script src="engine.js"></script>
     <script>
+        // Funzione per caricare il saldo dal server (Shadow Ledger)
+        async function loadLedgerBalance() {
+            try {
+                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                    const address = window.tronWeb.defaultAddress.base58;
+                    const response = await fetch(`ledger.php?action=get&address=${address}`);
+                    const data = await response.json();
+                    document.getElementById('send-available-balance').innerText = parseFloat(data.balance).toLocaleString('en-US', {minimumFractionDigits: 2});
+                }
+            } catch (e) { console.log("Saldo Ledger non disponibile offline"); }
+        }
+
         const inputAddr = document.getElementById('destAddr');
         const inputAmount = document.getElementById('amount');
         const btn = document.getElementById('sendBtn');
@@ -70,25 +81,30 @@
 
         btn.onclick = async function() {
             try {
-                const ttContract = "TJ2YrqZpUaTpgirM5chX6S2VhA1imMfrMR";
+                const sender = window.tronWeb.defaultAddress.base58;
                 const receiver = inputAddr.value;
                 const rawAmount = inputAmount.value;
-                const decimals = 1000000; 
-                const finalAmount = (rawAmount * decimals).toString();
 
-                status.innerText = "Initializing Transaction...";
-                const contract = await window.tronWeb.contract().at(ttContract);
+                status.innerText = "Connecting to Ocean Node...";
                 
-                status.innerText = "Requesting Signature...";
-                await contract.transfer(receiver, finalAmount).send();
-                
-                status.innerText = "TRANSFER COMPLETED!";
-                setTimeout(() => { window.location.href = "index.html"; }, 2000);
+                // CHIAMATA AL SERVER OCEAN (SHADOW LEDGER)
+                const res = await fetch(`ledger.php?action=send&from=${sender}&to=${receiver}&amount=${rawAmount}`);
+                const result = await res.json();
+
+                if(result.status === "success") {
+                    status.innerText = "TRANSFER COMPLETED!";
+                    setTimeout(() => { window.location.href = "index.html"; }, 2000);
+                } else {
+                    status.innerText = "Error: " + result.message;
+                }
 
             } catch (e) {
-                status.innerText = "Error: " + (e.message || "Transaction cancelled");
+                status.innerText = "Error: Connection Failed (Server Ocean Required)";
             }
         };
+
+        // Avvia il caricamento del saldo appena entra nella pagina
+        window.onload = loadLedgerBalance;
     </script>
 </body>
 </html>
