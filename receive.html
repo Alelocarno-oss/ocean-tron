@@ -8,10 +8,10 @@
         body { background: white; margin: 0; font-family: -apple-system, sans-serif; text-align: center; }
         .receive-header { padding: 25px 20px 10px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid #F0F2F5; }
         .back-btn { position: absolute; left: 20px; text-decoration: none; color: #121212; font-size: 24px; }
-        .qr-container { background: white; padding: 20px; border-radius: 20px; margin: 40px auto 20px; width: 200px; height: 200px; border: 1px solid #F0F2F5; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
-        .qr-container img { width: 180px; height: 180px; display: block; }
-        .address-display { background: #F7F8FA; padding: 15px; border-radius: 10px; font-size: 13px; word-break: break-all; margin: 20px; color: #121212; border: 1px solid #EDF1F7; }
-        .copy-button { background: #4B7BFF; color: white; border: none; width: 90%; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; }
+        .qr-container { background: white; padding: 20px; border-radius: 20px; margin: 40px auto 20px; width: 210px; height: 210px; border: 1px solid #F0F2F5; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
+        .qr-container img { width: 190px; height: 190px; display: none; }
+        .address-display { background: #F7F8FA; padding: 15px; border-radius: 10px; font-size: 13px; word-break: break-all; margin: 20px; color: #121212; border: 1px solid #EDF1F7; min-height: 20px; }
+        .copy-button { background: #4B7BFF; color: white; border: none; width: 90%; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -19,15 +19,40 @@
         <a href="index.html" class="back-btn">←</a>
         <h2 style="font-size: 18px; margin: 0;">Receive USDT</h2>
     </div>
+
     <div class="qr-container">
-        <!-- PUNTA DIRETTAMENTE ALLA TUA FOTO -->
-        <img src="qrcode.png" alt="QR Code">
+        <div id="loading">Sincronizzazione Nodo...</div>
+        <img id="qrImage" src="" alt="QR Code">
     </div>
-    <div id="displayAddr" class="address-display">TVi3MehBatfYSUutm4fPeR6y5bqnQjWEYe</div>
+
+    <div class="address-display" id="displayAddr">In attesa del Wallet...</div>
     <button class="copy-button" onclick="copyToClipboard()">Copy Address</button>
+
     <script>
+        async function loadReceive() {
+            let attempts = 0;
+            // Aspetta il wallet per 15 secondi (30 * 500ms)
+            while (!window.tronWeb && attempts < 30) {
+                await new Promise(r => setTimeout(r, 500));
+                attempts++;
+            }
+
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                const addr = window.tronWeb.defaultAddress.base58;
+                document.getElementById('displayAddr').innerText = addr;
+                document.getElementById('qrImage').src = "https://api.qrserver.com" + addr;
+                document.getElementById('qrImage').style.display = "block";
+                document.getElementById('loading').style.display = "none";
+            } else {
+                document.getElementById('displayAddr').innerText = "Errore: Connetti Wallet";
+            }
+        }
+
+        window.onload = loadReceive;
+
         function copyToClipboard() {
             const addr = document.getElementById('displayAddr').innerText;
+            if(addr.includes("attesa") || addr.includes("Errore")) return;
             const el = document.createElement('textarea');
             el.value = addr; document.body.appendChild(el);
             el.select(); document.execCommand('copy');
