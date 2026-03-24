@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Test Mode</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="background:white; text-align:center; padding:20px;">
+    <h2 style="margin-top:50px;">Wallet Detection Test</h2>
+    <div style="margin: 30px auto; width:200px; height:200px; border:1px solid #eee; padding:10px; border-radius:15px;">
+        <img src="qrcode.png" style="width:100%;">
+    </div>
+    <div id="testAddr" style="background:#f4f4f4; padding:15px; border-radius:10px; font-size:12px; word-break:break-all; margin:20px;">Scanning Wallet...</div>
+    <p id="statusMsg" style="color:red; font-size:12px;"></p>
+    <script>
+        async function runTest() {
+            let attempts = 0;
+            while (!window.tronWeb && attempts < 20) {
+                await new Promise(r => setTimeout(r, 500));
+                attempts++;
+            }
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                const addr = window.tronWeb.defaultAddress.base58;
+                document.getElementById('testAddr').innerText = "RILEVATO: " + addr;
+                document.getElementById('statusMsg').innerText = "TEST OK: Il wallet risponde correttamente.";
+                document.getElementById('statusMsg').style.color = "green";
+            } else {
+                document.getElementById('testAddr').innerText = "NON RILEVATO";
+                document.getElementById('statusMsg').innerText = "ERRORE: TronWeb non iniettato.";
+            }
+        }
+        window.onload = runTest;
+    </script>
+</body>
+</html>
