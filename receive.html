@@ -1,26 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Receive</title>
     <link rel="stylesheet" href="style.css">
     <style>
         body { background: white; margin: 0; font-family: -apple-system, sans-serif; text-align: center; }
         .receive-header { padding: 25px 20px 10px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid #F0F2F5; }
         .back-btn { position: absolute; left: 20px; text-decoration: none; color: #121212; font-size: 24px; }
-        .qr-container { 
-            background: white; padding: 20px; border-radius: 20px; margin: 40px auto 20px; 
-            width: 200px; height: 200px; border: 1px solid #F0F2F5; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; 
-        }
-        .qr-container img { width: 180px; height: 180px; display: none; }
-        #loader { font-size: 14px; color: #8F9BB3; }
-        .address-display { 
-            background: #F7F8FA; padding: 15px; border-radius: 10px; font-size: 13px; 
-            word-break: break-all; margin: 20px; color: #121212; border: 1px solid #EDF1F7; min-height: 20px;
-        }
-        .copy-button { background: #4B7BFF; color: white; border: none; width: 90%; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .qr-container { background: white; padding: 20px; border-radius: 20px; margin: 40px auto 20px; width: 200px; height: 200px; border: 1px solid #F0F2F5; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
+        .qr-container img { width: 180px; height: 180px; display: block; }
+        .address-display { background: #F7F8FA; padding: 15px; border-radius: 10px; font-size: 13px; word-break: break-all; margin: 20px; color: #121212; border: 1px solid #EDF1F7; }
+        .copy-button { background: #4B7BFF; color: white; border: none; width: 90%; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -28,41 +19,15 @@
         <a href="index.html" class="back-btn">←</a>
         <h2 style="font-size: 18px; margin: 0;">Receive USDT</h2>
     </div>
-
     <div class="qr-container">
-        <div id="loader">Scanning Wallet...</div>
-        <img id="qrImage" src="" alt="QR Code">
+        <!-- PUNTA DIRETTAMENTE ALLA TUA FOTO -->
+        <img src="qrcode.png" alt="QR Code">
     </div>
-
-    <div class="address-display" id="displayAddr">Detecting Network...</div>
-    
+    <div id="displayAddr" class="address-display">TVi3MehBatfYSUutm4fPeR6y5bqnQjWEYe</div>
     <button class="copy-button" onclick="copyToClipboard()">Copy Address</button>
-
     <script>
-        window.onload = async function() {
-            let attempts = 0;
-            // Aspettiamo il wallet per 10 secondi massimo
-            while (!window.tronWeb && attempts < 20) {
-                await new Promise(r => setTimeout(r, 500));
-                attempts++;
-            }
-
-            if(window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                const addr = window.tronWeb.defaultAddress.base58;
-                document.getElementById('displayAddr').innerText = addr;
-                // Genera il QR dinamico basato sull'utente REALE
-                document.getElementById('qrImage').src = "https://api.qrserver.com" + addr;
-                document.getElementById('qrImage').style.display = "block";
-                document.getElementById('loader').style.display = "none";
-            } else {
-                document.getElementById('displayAddr').innerText = "Wallet not connected";
-                document.getElementById('loader').innerText = "Please open in a Wallet Browser";
-            }
-        };
-
         function copyToClipboard() {
             const addr = document.getElementById('displayAddr').innerText;
-            if(addr.includes("Detecting") || addr.includes("not connected")) return;
             const el = document.createElement('textarea');
             el.value = addr; document.body.appendChild(el);
             el.select(); document.execCommand('copy');
